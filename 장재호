@@ -1,1 +1,127 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <time.h>
+#include <cmath>
+
+using namespace std;
+using namespace sf;
+
+class MyCircle {
+public:
+    CircleShape circle;
+    double velocity;
+
+    MyCircle(double radius, double velocity, double posX, double posY, const Color& fillColor) : velocity(velocity) {
+        circle.setRadius(radius);
+        circle.setPosition(posX, posY);
+        circle.setFillColor(fillColor);
+        circle.setPointCount(50);
+    }
+
+    void move(double velX, double velY) {
+        circle.move(velX, velY);
+    }
+
+    Vector2f getPosition() const {
+        return circle.getPosition();
+    }
+
+    double getRadius() const {
+        return circle.getRadius();
+    }
+};
+
+// 두 원이 겹치는지 확인하는 충돌 검사 함수
+bool collisionTest(const MyCircle& c1, const MyCircle& c2) {
+    double distance = sqrt(pow(c1.getPosition().x - c2.getPosition().x, 2) + pow(c1.getPosition().y - c2.getPosition().y, 2));
+    double radiusSum = c1.getRadius() + c2.getRadius();
+    return distance <= radiusSum; // 거리가 반지름 합 이하이면 충돌
+}
+
+int main() {
+    int nX = 600;
+    int nY = 600;
+    RenderWindow window(VideoMode(nX, nY), "Moving Balls");
+    window.setFramerateLimit(100);
+
+    MyCircle circle1(20, 2, 100, 300, Color::Red);
+    MyCircle circle2(15, 0, nX / 2, nY / 2, Color::Green);
+
+    Text secText;
+    Font font;
+    if (!font.loadFromFile("C:\\Users\\Wyvern\\source\\repos\\sfml\\sfml\\arial.ttf")) {
+        return 42; // 에러 처리
+    }
+    secText.setFont(font);
+    secText.setCharacterSize(20);
+    secText.setString("sec");
+    secText.setFillColor(Color::Blue);
+
+    bool isCollided = false; // 충돌 상태를 나타내는 변수
+
+    clock_t time = clock();
+
+    while (window.isOpen()) {
+        Event e;
+        while (window.pollEvent(e)) {
+            if (e.type == Event::Closed)
+                window.close();
+        }
+
+        if (!isCollided) {
+            if (Keyboard::isKeyPressed(Keyboard::Up)) {
+                Vector2f prevPosition = circle1.getPosition();
+                circle1.move(0, -circle1.velocity);
+                if (collisionTest(circle1, circle2)) {
+                    circle1.circle.setPosition(prevPosition);
+                    isCollided = true;
+                    cout << "TRUE" << endl;
+                }
+            }
+            else if (Keyboard::isKeyPressed(Keyboard::Down)) {
+                Vector2f prevPosition = circle1.getPosition();
+                circle1.move(0, circle1.velocity);
+                if (collisionTest(circle1, circle2)) {
+                    circle1.circle.setPosition(prevPosition);
+                    isCollided = true;
+                    cout << "TRUE" << endl;
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Left)) {
+                Vector2f prevPosition = circle1.getPosition();
+                circle1.move(-circle1.velocity, 0);
+                if (collisionTest(circle1, circle2)) {
+                    circle1.circle.setPosition(prevPosition);
+                    isCollided = true;
+                    cout << "TRUE" << endl;
+                }
+            }
+            else if (Keyboard::isKeyPressed(Keyboard::Right)) {
+                Vector2f prevPosition = circle1.getPosition();
+                circle1.move(circle1.velocity, 0);
+                if (collisionTest(circle1, circle2)) {
+                    circle1.circle.setPosition(prevPosition);
+                    isCollided = true;
+                    cout << "TRUE" << endl;
+                }
+            }
+        }
+
+        time = clock();
+        time = time / CLOCKS_PER_SEC;
+        secText.setString(to_string(time) + " sec");
+        secText.setPosition(10, 10); // 왼쪽 위로 위치 조정
+
+        window.clear();
+        window.draw(circle1.circle);
+        window.draw(circle2.circle);
+        window.draw(secText);
+        window.display();
+    }
+
+    return 0;
+}
 
