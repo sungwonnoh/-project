@@ -1,0 +1,70 @@
+#include <windows.h>
+#include <stdio.h>
+#include <iostream>
+
+using namespace std;
+
+struct Point {
+	float x;
+	float y;
+
+	Point() {
+		x = 0;
+		y = 0;
+	}
+
+	Point(float val_x, float val_y) {
+		x = val_x;
+		y = val_y;
+	}
+};
+
+struct Circle {
+	Point pos;
+	Point vel;
+	Point acc;
+	float radius;
+
+	Circle(float x, float y, float rad) {
+		pos.x = x;
+		pos.y = y;
+		radius = rad;
+	}
+
+	void draw(HDC hdc) {
+		Ellipse(hdc, pos.x - radius, pos.y - radius, pos.x + radius, pos.y + radius);
+	}
+
+	void move(HDC hdc) {
+		vel.y = vel.y - acc.y;
+		pos.x = pos.x + vel.x;
+		pos.y = pos.y - vel.y;
+	}
+};
+
+int main() {
+
+	HDC hdc = GetWindowDC(GetForegroundWindow());
+
+	RECT rcCli;
+	GetClientRect(WindowFromDC(hdc), &rcCli);
+	int nX = rcCli.right - rcCli.left;
+	int nY = rcCli.bottom - rcCli.top;
+	//cout << nX << ", " << nY << endl;
+
+	Circle circle(100, 400, 50);
+	float floor = circle.pos.y;
+
+	circle.vel = { 50.0, 50.0 };
+	circle.acc = { 0, 10.0 }; //중력가속도 10으로 설정
+
+	for (int dt = 0; dt <= 10000; dt++) {
+		circle.draw(hdc);
+		circle.move(hdc);
+		Sleep(1000);
+		if (circle.pos.y > floor) {
+			break;
+		}
+	}
+	return 0;
+}
