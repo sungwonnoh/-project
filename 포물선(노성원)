@@ -1,0 +1,62 @@
+#include <windows.h>
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+
+struct Point {
+	float x;//x좌표
+	float y;//y좌표
+
+	Point() {//생성자로 구조체 초기화
+		x = 0;
+		y = 0;
+	}
+
+	Point(float val_x, float val_y) {
+		x = val_x;
+		y = val_y;
+	}
+};
+struct Circle {
+	Point pos;//원의 중심
+	Point vel;//속도
+	Point acc;//가속도
+
+	float radius;
+
+	Circle(float x, float y, float rad) {
+		pos.x = x;
+		pos.y = y;
+		radius = rad;
+	}
+
+	void draw(HDC hdc) {
+		Ellipse(hdc, pos.x - radius, pos.y - radius, pos.x + radius, pos.y + radius);
+	}
+};
+int main() {
+	HDC hdc = GetWindowDC(GetForegroundWindow());
+
+	Circle rightward(50, 300, 10);//오른쪽 등속이동(1번)
+	rightward.vel = Point(50, 0);
+	rightward.acc = Point(0, 0);
+
+	Circle parabola(100, 500, 10);//포물선(2번)
+	parabola.vel = Point(50,-50);
+	parabola.acc = Point(0, 9.8);//중력가속도
+
+	for (float dt = 0; dt < 1; dt += 0.001) {
+		rightward.draw(hdc);
+		rightward.pos.x += rightward.vel.x * dt;
+
+		parabola.draw(hdc);
+		parabola.pos.x = parabola.pos.x + parabola.vel.x * dt;
+		parabola.pos.y = parabola.pos.y + parabola.vel.y * dt;
+		parabola.vel.x = parabola.vel.x + parabola.acc.x * dt;
+		parabola.vel.y = parabola.vel.y + parabola.acc.y * dt;
+
+		Sleep(10);
+	}
+	return 0;
+}
+
