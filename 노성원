@@ -1,1 +1,131 @@
-코드
+//12주차
+#include <SFML/Graphics.hpp>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <time.h>
+#include <math.h>
+
+using namespace std;
+using namespace sf;
+
+class MyCircle {
+public:
+	CircleShape circle;
+	double x;
+	double y;
+	double radius;
+
+	void init(double x_val, double y_val, double r);
+	bool collisionTest(const MyCircle& obj);//충돌여부 함수
+};
+void MyCircle::init(double x_val, double y_val, double r) {
+	x = x_val;
+	y = y_val;
+	radius = r;
+}
+bool MyCircle::collisionTest(const MyCircle& obj) {
+	double distance = sqrt(pow(x - obj.x, 2) + pow(y - obj.y, 2));//거리공식
+	double sumRadius = radius + obj.radius;//두 원의 반지름의 합
+	return (distance <= sumRadius);
+}
+
+int main(){ 
+	int nX = 500;
+	int nY = 500;
+	RenderWindow window(VideoMode(nX, nY), "Moving Ball");
+
+	window.setFramerateLimit(100);
+
+	double radius = 20;
+	double diameter = radius * 2;
+	double posX = 0;
+	double posY = nY - diameter;
+	double velocity = 2;
+
+	//움직이는 원
+	CircleShape circle(radius); 
+	circle.setPosition(posX, posY);
+	circle.setFillColor(Color(255, 0, 0));
+	circle.setPointCount(50);
+	
+	//고정된 원
+	CircleShape circle2(radius * 2);
+	circle2.setPosition(nX / 2 - radius, nY / 2 - radius);
+	circle2.setFillColor(Color(0, 255, 0));
+	circle2.setPointCount(50);
+
+	MyCircle Circle1;
+	MyCircle Circle2;
+	Circle1.init(posX, posY, radius);
+	Circle2.init(nX / 2, nY / 2, radius * 2);
+
+	Text text;
+	Font font;
+
+	int t = 0;
+
+	if (!font.loadFromFile("C:\\Users\\jessi\\source\\repos\\project1121\\arial.ttf")) { 
+		return 42; // Robust error handling!
+	}
+
+	text.setFont(font);
+	text.setString(to_string(t) + " sec");
+	text.setCharacterSize(50);
+	text.setFillColor(Color::Blue);
+	text.setPosition(0, 0);
+
+	clock_t time = clock();
+
+	// 여기서부터 게임 루프
+
+	while (window.isOpen())
+	{
+		// 이벤트 검사 및 처리
+		Event e;
+
+		while (window.pollEvent(e)) {
+			if (e.type == Event::Closed)
+				window.close();
+		}
+		
+		if (Keyboard::isKeyPressed(Keyboard::Up)) {
+			circle.move(0, -velocity);
+			Circle1.y -= velocity;
+		} else if (Keyboard::isKeyPressed(Keyboard::Down)) {
+			circle.move(0, velocity);
+			Circle1.y += velocity;
+		}
+
+		if (Keyboard::isKeyPressed(Keyboard::Left)) {
+			circle.move(-velocity, 0);
+			Circle1.x -= velocity;
+		} else if (Keyboard::isKeyPressed(Keyboard::Right)) {
+			circle.move(velocity, 0);
+			Circle1.x += velocity;
+		}
+
+		time = clock();
+		time = time / CLOCKS_PER_SEC;
+		text.setString(to_string(time) + " sec");
+
+		// 화면을 지운다. 
+		window.clear();
+
+		// 화면에 원을 그린다. 
+		window.draw(circle);
+		window.draw(circle2);
+		window.draw(text);
+
+		if (Circle1.collisionTest(Circle2)) {
+			cout << "true"<<endl;
+		}
+		else {
+			cout << " " << endl;
+		}
+		// 화면을 표시한다. 
+		window.display();
+	}
+
+	return 0;
+}
