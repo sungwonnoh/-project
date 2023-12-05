@@ -4,6 +4,7 @@
 #include <vector>
 #include <time.h>
 #include <cmath>
+#include <windows.h>
 
 using namespace std;
 using namespace sf;
@@ -37,13 +38,32 @@ bool MyCircle::collisionTest(MyCircle obj) {
 
 }
 
+class MyRect {
+public:
+
+	RectangleShape rect;
+
+	MyRect(double posX, double posY, double angle, const Color& mycolor) {
+		rect.setPosition(posX, posY); //사각형의 왼쪽 좌상단의 좌표를 지정
+		rect.setSize(Vector2f(20, 60)); //width, height (가로, 세로)
+		rect.setRotation(angle);//왼쪽 좌상단이 각의 꼭짓점이 되고, 시계방향으로 회전
+		rect.setFillColor(mycolor);
+	}
+
+
+
+
+};
+
+
+
 int main()
 {
-	int nX = 300;
-	int nY = 300;
+	int nX = 1000; //크기 조정
+	int nY = 500;
 
-	RenderWindow window(VideoMode(nX, nY), "Moving Ball");
-	
+	RenderWindow window(VideoMode(nX, nY), "Fortress");
+
 
 	window.setFramerateLimit(100);
 
@@ -54,8 +74,10 @@ int main()
 	double posY = nY - diameter;
 	double velocity = 2;
 
-	MyCircle a {posX,posY,radius };
-	MyCircle b { 140,140,10 };
+	MyRect myrect{ 20.0, (double)nY, 225.0 , Color::Blue };
+
+	MyCircle a{ posX,posY,radius };
+	MyCircle b{ 140,140,10 };
 
 	CircleShape circle(a.getR()); //반지름
 	CircleShape circle1(b.getR());
@@ -87,7 +109,7 @@ int main()
 	text.setFillColor(Color::Blue);
 
 	text.setPosition(0, 0);
-
+		
 	clock_t time = clock();
 
 
@@ -95,7 +117,7 @@ int main()
 	while (window.isOpen())
 	{
 
-		
+
 
 		// 이벤트 검사 및 처리
 		Event e;
@@ -107,19 +129,19 @@ int main()
 				window.close();
 
 		}
-		
+
 		if (a.collisionTest(b))
 			cout << "True" << endl;
 		else
 			cout << "False" << endl;
-		
+
 
 		if (Keyboard::isKeyPressed(Keyboard::Up)) {
 
 			//cout << "up" << endl;
 
-			circle.move(0, -velocity);
-			a.setY(a.getY() - velocity);
+			myrect.rect.rotate(-1);
+
 
 		}
 
@@ -127,8 +149,8 @@ int main()
 
 			//cout << "down" << endl;
 
-			circle.move(0, velocity);
-			a.setY(a.getY() + velocity);
+
+			myrect.rect.rotate(+1);
 
 
 		}
@@ -148,6 +170,22 @@ int main()
 
 			circle.move(velocity, 0);
 			a.setX(a.getX() + velocity);
+
+		}
+
+
+		if (Keyboard::isKeyPressed(Keyboard::Space)) {
+
+			//발사
+			Sleep(500);
+
+			for (; ;) {
+
+
+			}
+
+			circle.move(velocity, 0);
+
 
 		}
 
@@ -174,8 +212,8 @@ int main()
 
 		window.draw(circle);
 		window.draw(circle1);
-		
 
+		window.draw(myrect.rect);
 
 		window.draw(text);
 
@@ -190,3 +228,4 @@ int main()
 	return 0;
 
 }
+
