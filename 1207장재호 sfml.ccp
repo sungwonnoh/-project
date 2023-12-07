@@ -54,16 +54,19 @@ int main()
 
 	//색깔변수 선언
 	int col = 0;
-	Item item[8]; //아이템 구체 8개 배열
+	Item item[12]; //아이템 구체 8개 배열
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 12; i++) {
 		col = rand() % 4; //랜덤으로 0~3수 생성
 		if (i <= 3) {
 
-			item[i].setPosition(900 * 6/8 , 160*(i+1) );
+			item[i].setPosition(900 * 5/8 , 160*(i+1) );
+		}
+		else if (i <= 7) {
+			item[i].setPosition(900 * 6 / 8, 160 * (i -3));
 		}
 		else {
-			item[i].setPosition(900 * 7/8, 160*(i-3));
+			item[i].setPosition(900 * 7/8, 160*(i-7));
 		}
 
 		if (col == 0) {
@@ -246,7 +249,7 @@ int main()
 		window.draw(text);
 		window.draw(ammoText);
 
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 12; i++) {
 			window.draw(*item[i].getCircleShape());
 		}
 
