@@ -11,7 +11,7 @@ using namespace sf;
 
 class Item {
 
-	double x, y, radius;
+	double x, y, radius, color;
 	CircleShape circle;
 
 public:
@@ -21,6 +21,15 @@ public:
 		circle.setFillColor(fillColor);
 		circle.setPointCount(50);
 	}
+
+	Color getColor();
+	void setColor(Color fillColor);
+
+	void setPosition(double x, double y);
+	Vector2f getPosition();
+	float getRadius();
+
+
 	CircleShape* getCircleShape(); 
-	bool collisionTest(Item obj);
+	int collisionTest(Item& obj);
 };
