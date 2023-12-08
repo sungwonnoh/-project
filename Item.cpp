@@ -10,18 +10,45 @@
 using namespace std;
 using namespace sf;
 
-bool Item::collisionTest(Item obj) {
+int Item::collisionTest(Item& obj) {
 
-	/*
-	int distance = sqrt(pow(x - obj.getX(), 2) + pow(y - obj.getY(), 2));
+	int distance = sqrt(pow(getPosition().x - obj.getPosition().x, 2) + pow(getPosition().y - obj.getPosition().y, 2));
 
-	if (distance < radius + obj.getR()) {
-		return true;
+	if (distance < getRadius() + obj.getRadius()) {
+		if (obj.getColor() == Color::Red) {
+			return 1;
+		}
+		else if (obj.getColor() == Color::Blue) {
+			return 2;
+		}
+		else if (obj.getColor() == Color::Green) {
+			return 3;
+		}
+		else if (obj.getColor() == Color::Yellow) {
+			return 4;
+		}
 	}
-	else {
-		return false;
-	}
-	*/
+}
+
+Color Item::getColor() {
+	return circle.getFillColor();
+}
+
+void Item::setColor(Color fillColor)
+{
+	circle.setFillColor(fillColor);
+}
+
+void Item::setPosition(double x, double y) {
+	circle.setPosition(x,y);
+}
+
+Vector2f Item::getPosition() {
+	return circle.getPosition();
+}
+
+float Item::getRadius() {
+	return circle.getRadius();
 }
 
 CircleShape* Item::getCircleShape() {
