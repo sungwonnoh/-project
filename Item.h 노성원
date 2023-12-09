@@ -11,10 +11,9 @@
 using namespace std;
 using namespace sf;
 
-
 class Item {
 
-	double x, y, radius;
+	double x, y, radius, color;
 	CircleShape circle;
 
 public:
@@ -24,13 +23,14 @@ public:
 		circle.setFillColor(fillColor);
 		circle.setPointCount(50);
 	}
-	//int collisionTest(MyRect& obj); //new!
-	int collisionTest(Item& obj);
+
 	Color getColor();
-	void setPosition(double x, double y);//new!
-	void setColor(Color fillColor);//new!
-	Vector2f getPosition();//new!
-	float getRadius();//new!
+	void setColor(Color fillColor);
+
+	void setPosition(double x, double y);
+	Vector2f getPosition();
+	float getRadius();
 	CircleShape* getCircleShape();
+	int collisionTest(Item& obj);
 
 };
