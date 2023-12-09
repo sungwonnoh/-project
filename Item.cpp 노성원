@@ -13,11 +13,9 @@ using namespace sf;
 
 
 int Item::collisionTest(Item& obj) {//new!
-//int Item::collisionTest(MyRect& obj) {
-    int distance = sqrt(pow(x - obj.getPosition().x, 2) + pow(y - obj.getPosition().y, 2));
+    int distance = sqrt(pow(getPosition().x - obj.getPosition().x, 2) + pow(getPosition().y - obj.getPosition().y, 2));
 
-   //if (distance < getRadius() + obj.getRadius()) {
-   if (distance < radius + obj.getRadius()) {
+   if (distance < getRadius() + obj.getRadius()) {
         if (obj.getColor() == Color::Red) {
             return 1;
         }
@@ -38,17 +36,17 @@ int Item::collisionTest(Item& obj) {//new!
 Color Item::getColor() {
 	return circle.getFillColor();
 }
-void Item::setPosition(double x, double y) {//new!
-    circle.setPosition(x, y);
-}
 void Item::setColor(Color fillColor) {
     circle.setFillColor(fillColor);
 }
 
-Vector2f Item::getPosition() {//new!
+void Item::setPosition(double x, double y) {
+    circle.setPosition(x, y);
+}
+Vector2f Item::getPosition() {
     return circle.getPosition();
 }
-float Item::getRadius() {//new!
+float Item::getRadius() {
     return circle.getRadius();
 }
 
