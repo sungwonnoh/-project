@@ -242,6 +242,8 @@ int main()
                 sc += 10;
                 removeItem(i);
             }
+        }
+
 
         if (isFired && (isLaser == true)) {
 
