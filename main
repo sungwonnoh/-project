@@ -15,7 +15,7 @@
 using namespace std;
 using namespace sf;
 
-
+//대포 만들기
 class MyRect {
 
 public:
@@ -49,7 +49,7 @@ int main()
     MyRect myrect{ width, (double)nY, width, height, 225.0 , Color::Blue }; //대포 생성(나타날 x좌표, y좌표, 가로, 세로, 각도, 색)
 
     //default값, 변수를 선언하여 일일이 수정할 필요 없이 한번에 수정할 수 있도록 
-    float defaultPower = 2;
+    float defaultPower = 0;
     float power = defaultPower;
     float maxPower = 12;
     float currentangle = 270 - myrect.rect.getRotation(); //생각하기 쉽도록 각도 조정
@@ -112,19 +112,21 @@ int main()
     int bulletCount = defaultBullet;
     bool isFired = false;
     bool isLaser = false;
+    int laserBulletCount = 0;//레이저 발사횟수를 저장하는 변수 추가
 
-
+    //각종 표시할 텍스트(남은 포탄 개수, 점수, 레이저 모드 활성화 여부, 파워%)
     Text text;
-    Text ammoText; //남은 포탄 개수 표시할 텍스트
+    Text ammoText; 
     Text score; 
+    Text laserMode;
+    Text powerText;
 
     Font font;
 
     int t = 0;
     int sc = 0; //점수
 
-    int laserBulletCount = 0;//레이저 발사횟수를 저장하는 변수 추가;
-
+  
     if (!font.loadFromFile("D:\\works\\sfml_ex\\arial.ttf")) { //E:\\works\\practice\\ch7\\x64\\Debug
         return 42; // Robust error handling!
     }
@@ -132,22 +134,35 @@ int main()
     text.setFont(font);
     ammoText.setFont(font);
     score.setFont(font);
+    laserMode.setFont(font);
+    powerText.setFont(font);
 
     text.setString(to_string(t) + " sec");
     ammoText.setString(to_string(bulletCount) + "left");
-    score.setString("score : " + to_string(sc));
+    score.setString("Score : " + to_string(sc));
+    laserMode.setString("Laser Mode : OFF");
+    powerText.setString("Power: " + to_string((int)(power / maxPower * 100)) + "%");
+
 
     text.setCharacterSize(30);
     ammoText.setCharacterSize(30);
     score.setCharacterSize(30);
+    laserMode.setCharacterSize(30);
+    powerText.setCharacterSize(30);
+
 
     text.setFillColor(Color::Blue);
     ammoText.setFillColor(Color::White);
     score.setFillColor(Color::Red);
+    laserMode.setFillColor(Color::Yellow);
+    powerText.setFillColor(Color::Green);
 
     text.setPosition(0, 0);
     ammoText.setPosition(0, 30);
     score.setPosition(0, 60);
+    laserMode.setPosition(0, 90);
+    powerText.setPosition(0, 120);
+
 
     clock_t time = clock();
 
@@ -219,7 +234,7 @@ int main()
                 vx = power * cos(currentangle * 3.14 / 180);
                 vy = -power * sin(currentangle * 3.14 / 180);
                 bulletCount -= 1;
-                cout << bulletCount << " ammo left" << endl;
+
             }
             else {
                 isLaser = false;
@@ -275,27 +290,27 @@ int main()
                 power = defaultPower;
                 myrect.rect.setPosition(width, (double)nY);
 
-                cout << "Laser ammo : " << laserBulletCount << endl;
                 if (laserBulletCount != 0) {
-                    // 레이저 발사 횟수 감소
-                    isLaser = true; //3번일때 레이저
+                    isLaser = true; 
                     cout << "Entering laser mode" << endl;
+                    laserMode.setString("Laser Mode: ON");
                 }
                 if (laserBulletCount == 0) {
                     isLaser = false;
                     cout << "Exiting laser mode" << endl;
+                    laserMode.setString("Laser Mode: OFF");
                 }
                 laserBulletCount--;
-
             }
 
         }
+
         //일반 상태일 때 발사한 경우
         else if (isFired) {
 
             Sleep(10); //100프레임으로 움직임
-            vy += 0.1; //중력 고려
 
+            vy += 0.1; //중력 고려
             bullet.getCircleShape()->move(vx, vy);
 
             //포탄이 화면 벗어나면 초기화 & 레이저 상태 적용 유무
@@ -306,9 +321,10 @@ int main()
 
                 //일반 상태로 발사했을 때 레이저 아이템을 먹은 경우
                 if (laserBulletCount > 0) {
-                    laserBulletCount--;  // 레이저 발사 횟수 미리 감소
                     isLaser = true; //다음 발사를 위해 레이저 효과 적용
+                    laserBulletCount--;  // 레이저 발사 횟수 미리 감소
                     cout << "Entering laser mode" << endl;
+                    laserMode.setString("Laser Mode: ON");
                 }
             }
         }
@@ -328,7 +344,7 @@ int main()
         }
 
         score.setString("Score: " + to_string(sc));
-
+        powerText.setString("Power: "+ to_string((int)(power / maxPower * 100)) + "%");
 
         // 화면을 지운다. 
         window.clear();
@@ -347,6 +363,8 @@ int main()
         }
 
         window.draw(score);
+        window.draw(laserMode);
+        window.draw(powerText);
 
         // 화면을 표시한다. 
 
